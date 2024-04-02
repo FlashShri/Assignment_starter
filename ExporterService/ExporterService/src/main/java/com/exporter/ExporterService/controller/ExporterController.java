@@ -1,5 +1,6 @@
 package com.exporter.ExporterService.controller;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ import com.exporter.ExporterService.dto.ExporterDTO;
 import com.exporter.ExporterService.entity.Exporter;
 import com.exporter.ExporterService.exception.ExporterServiceCustomException;
 import com.exporter.ExporterService.service.ExporterService;
+import com.exporter.ExporterService.service.ReportService;
+
+import net.sf.jasperreports.engine.JRException;
 
 @RestController
 @RequestMapping("/exporter")
@@ -26,6 +30,23 @@ public class ExporterController {
 
 	@Autowired
 	private  ExporterService exporterService ;
+	
+	@Autowired
+	private ReportService reportservice;
+	
+	
+	@GetMapping("/report/{reportFormat}")
+	public String getReport(@PathVariable("reportFormat") String reportFormat) throws FileNotFoundException, JRException{
+			
+		String response = reportservice.exportReport(reportFormat);
+		
+		return response;
+	
+	}
+	
+	
+	
+	
 	
 	@PostMapping
 	 public ResponseEntity<Long> addExporter(@RequestBody ExporterDTO expdto) {
@@ -37,6 +58,8 @@ public class ExporterController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+	
+	
 	
 	@GetMapping
 	public ResponseEntity<List<Exporter>> getAllExporters(){
